@@ -23,7 +23,7 @@
 #
 #  $Id$
 #
-#  onall v2.11 -- A parallelized system-administration tool.
+#  onall v2.12 -- A parallelized system-administration tool.
 #    Written by Rafi Khardalian.
 # 
 #  Usage: onall [OPTIONS] <command>
@@ -57,7 +57,7 @@ use Getopt::Long;
 use Data::Dumper;
 
 
-our $version = '2.11';
+our $version = '2.12';
 our $exec_cmd = '';
 our $children = 0;
 our %children = ();
@@ -98,10 +98,21 @@ $opt{delay} = $default{delay}
     unless (exists $opt{delay} or $opt{delay} =~ m/\d+/);
 $opt{timeout} = $default{timeout}
     unless (exists $opt{timeout} or $opt{timeout} =~ m/\d+/);
-$opt{user} = $default{user}
-    unless (exists $opt{user});
 $opt{syslist} = $default{syslist}
     unless (exists $opt{syslist});
+
+unless (exists $opt{user}) {
+    if (exists $ENV{SUDO_USER}) {
+        $opt{user} = $ENV{SUDO_USER};
+    }
+    elsif (exists $ENV{USER}) {
+        $opt{user} = $ENV{USER};
+    }
+    else {
+        $opt{user} = $default{user};
+    }
+}
+
 delete $opt{linenums}
     if (exists $opt{suppress});
 
